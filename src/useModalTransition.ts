@@ -1,26 +1,91 @@
 import { useCallback, useState, useLayoutEffect, useRef } from "react";
 
 interface Props {
-  readonly modalOpened?: boolean;
+  /**
+   * You should pass the react state here. Changing this to „true” starts open animation, changing to “false” starts close animation.
+   */
+  readonly modalOpened: boolean;
+  /**
+   * You can pass function here. Called when the open animation is ready to start.
+   */
   onOpenAnimationStart?(e?: HTMLElement): void;
+  /**
+   * Optional. You can pass function here. Called when the open animation is finished.
+   */
   onOpenAnimationEnd?(e?: HTMLElement): void;
+  /**
+   *  Optional. You can pass function here. Called when the close animation is ready to start.
+   */
   onCloseAnimationStart?(e?: HTMLElement): void;
+  /**
+   * Optional.  You can pass function here. Called when the close animation is finished.
+   */
   onCloseAnimationEnd?(e?: HTMLElement): void;
+  /**
+   * You should pass the react useRef here. Reference to element on page, needed to download dimensions for animation.
+   */
   readonly firstElemRef: React.RefObject<HTMLElement>;
+  /**
+   * You should pass the react useRef here. Reference to element in modal, needed to download dimensions for animation.
+   */
   readonly modalElemRef: React.RefObject<HTMLElement>;
+  /**
+   *  Optional. Opening animation duration (ms). Default value: 280ms.
+   */
   readonly openDuration?: number;
+  /**
+   *  Optional. Closing animation duration (ms).  Default value: 280ms.
+   */
   readonly closeDuration?: number;
+  /**
+   * Optional. You have to pass result of img tag “onload” event or “onLoadingComplete” from <Image> NextJS Component.
+   Highly Recommended when you make transition between images.
+   */
   readonly imgLoaded?: boolean;
-  readonly modalDataAttr?: string;
+  /**
+   * Optional. Accepts querySelector selectors. To prevent flickering when you have transition between images.  You can do the same by use “modalElemRef”
+   */
+
+  readonly modalSelector?: string;
+  /**
+   * Optional. It hides first element when modal is opened. Default value: true.
+   */
   readonly hideFirstElem?: boolean;
+  /**
+   * Optional. Accepts react useRef. To prevent flickering when you have transition between images.  You can do the same by use “modalSelector”.
+   */
   readonly modalRef?: React.RefObject<HTMLElement>;
+  /**
+   * Optional. Close animation easing function. You can pass here e.g. cubic-bezier. Default value: "ease-out".
+   */
   readonly closeEasing?: string;
+  /**
+   * Optional. Open animation easing function. You can pass here e.g. cubic-bezier. Default value: "ease-in".
+   */
   readonly openEasing?: string;
+  /**
+   * Optional. TransformOrigin CSS property value. Default value: "center".
+   */
   readonly transformOrigin?: "left top" | "center";
+  /**
+   * Optional. Property for debugging. Pause element before animation start. Work on firstElemRef. (open animation).
+   */
   readonly pauseOnOpen?: boolean;
+  /**
+   * Optional. Property for debugging. Pause element before animation start. Work on modalElemRef (close animation).
+   */
   readonly pauseOnClose?: boolean;
+  /**
+   * Optional. Set it to true when you have to disable open animation.
+   */
   readonly disableOpenAnimation?: boolean;
+  /**
+   * Optional. Set it to true when you have to disable close animation.
+   */
   readonly disableCloseAnimation?: boolean;
+  /**
+   * Optional. You can pass the react state here. This must be the id of your active element. You need this when you want the first element to become visible after changing the element (id). If you have hideFirstElem set to false, you don't need it.
+   */
   readonly activeIndex?: number | string;
 }
 
@@ -66,7 +131,7 @@ const useModalTransition = ({
   openDuration = 280,
   closeDuration = 280,
   imgLoaded,
-  modalDataAttr,
+  modalSelector,
   hideFirstElem = true,
   modalRef,
   activeIndex,
@@ -187,7 +252,7 @@ const useModalTransition = ({
     const modal =
       modalRef && modalRef.current
         ? modalRef?.current
-        : document.querySelector<HTMLElement>(`[data-id=${modalDataAttr}]`);
+        : document.querySelector<HTMLElement>(`${modalSelector}`);
 
     //hide modal when image isn't loaded
     if (imgLoaded !== undefined) {
