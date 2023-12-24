@@ -6,7 +6,7 @@ import {
   useState,
   ComponentState,
 } from "react";
-import useModalTransition from "../../../useModalTransition";
+import useModalTransition from "use-modal-transition";
 import Modal from "../Modal";
 
 interface Props {
