@@ -144,7 +144,6 @@ const useModalTransition = ({
   disableCloseAnimation = false,
 }: Props) => {
   const previousFirstElem = useRef<HTMLElement>(); //cache the element to be able to change its styles
-  const previousModalElem = useRef<HTMLElement>();
   const previousModalDim = useRef<DOMRect>(); //cache an elem in modal dimensions for close animation;
 
   const [restartAnim, setRestartAnim] = useState(false);
@@ -265,7 +264,6 @@ const useModalTransition = ({
     if (firstElem) previousFirstElem.current = firstElem;
 
     if (modalElem) {
-      previousModalElem.current = modalElem;
       previousModalDim.current = modalElem.getBoundingClientRect();
     }
 
