@@ -1,7 +1,37 @@
 {
-  "dependencies": {
-    "@types/react": "^18.2.45",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+  "name": "use-modal-transition",
+  "version": "1.0.7",
+  "description": "a library that allows the transition between an element on a website and a modal element",
+  "main": "useModalTransition.js",
+  "types": "useModalTransition.d.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/michalk91/useModalTransition.git"
+  },
+  "keywords": [
+    "transition-between-elements",
+    "hook",
+    "modal",
+    "react",
+    "portal",
+    "flip",
+    "animation",
+    "animation-technique",
+    "WAAPI"
+  ],
+  "author": "Michal Kukla",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/michalk91/useModalTransition/issues"
+  },
+  "homepage": "https://github.com/michalk91/useModalTransition#readme",
+  "peerDependencies": {
+    "react": ">=16",
+    "react-dom": ">=16"
+
   }
+
 }
