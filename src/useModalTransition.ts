@@ -213,7 +213,7 @@ const useModalTransition = ({
   const openAnimation = useCallback(
     (firstElem: HTMLElement, modalElem: HTMLElement) => {
       if (!modalElem || !firstElem) return;
-      console.log("first elem", firstElem, hideFirstElem);
+
       if (hideFirstElem) {
         firstElem.style.opacity = "0";
       }
