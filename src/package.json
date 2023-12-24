@@ -1,6 +1,6 @@
 {
   "name": "use-modal-transition",
-  "version": "1.0.7",
+  "version": "1.0.10",
   "description": "a library that allows the transition between an element on a website and a modal element",
   "main": "useModalTransition.js",
   "types": "useModalTransition.d.ts",
