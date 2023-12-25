@@ -2,89 +2,107 @@ import { useCallback, useState, useLayoutEffect, useRef } from "react";
 
 interface Props {
   /**
-   * You should pass the react state here. Changing this to „true” starts open animation, changing to “false” starts close animation.
+   * Changing this to „true” starts opening the animation, changing to “false” starts closing the animation.
    */
   readonly modalOpened: boolean;
+
   /**
-   * You can pass function here. Called when the open animation is ready to start.
+   * Optional. Called when the opening animation is ready to start. It is provided a reference to the DOM element (modalElemRef) being transitioned as the argument.
    */
   onOpenAnimationStart?(e?: HTMLElement): void;
+
   /**
-   * Optional. You can pass function here. Called when the open animation is finished.
+   * Optional. Called when the opening animation is finished. It is provided a reference to the DOM element (modalElemRef) being transitioned as the argument.
    */
   onOpenAnimationEnd?(e?: HTMLElement): void;
+
   /**
-   *  Optional. You can pass function here. Called when the close animation is ready to start.
+   *  Optional. Called when the closing animation is ready to start. It is provided a reference to the DOM element (firstElemRef) being transitioned as the argument.
    */
   onCloseAnimationStart?(e?: HTMLElement): void;
+
   /**
-   * Optional.  You can pass function here. Called when the close animation is finished.
+   * Optional.  Called when the closing animation is finished. It is provided a reference to the DOM element (firstElemRef) being transitioned as the argument.
    */
   onCloseAnimationEnd?(e?: HTMLElement): void;
+
   /**
-   * You should pass the react useRef here. Reference to element on page, needed to download dimensions for animation.
+   * Reference to an element on the page, needed to download the dimensions for the animation.
    */
   readonly firstElemRef: React.RefObject<HTMLElement>;
+
   /**
-   * You should pass the react useRef here. Reference to element in modal, needed to download dimensions for animation.
+   * Reference to an element in the modal, needed to download the dimensions for the animation.
    */
   readonly modalElemRef: React.RefObject<HTMLElement>;
+
   /**
-   *  Optional. Opening animation duration (ms). Default value: 280ms.
+   *  Optional. Opening the animation duration (ms). Default value: 280ms.
    */
   readonly openDuration?: number;
+
   /**
-   *  Optional. Closing animation duration (ms).  Default value: 280ms.
+   *  Optional. Closing the animation duration (ms).  Default value: 280ms.
    */
   readonly closeDuration?: number;
+
   /**
-   * Optional. You have to pass result of img tag “onload” event or “onLoadingComplete” from <Image> NextJS Component.
-   Highly Recommended when you make transition between images.
+   * Optional. You have to pass the result of img tag “onload” event or “onLoadingComplete” from the  NextJS Component. Highly recommended when you make the transition between images.
    */
   readonly imgLoaded?: boolean;
-  /**
-   * Optional. Accepts querySelector selectors. To prevent flickering when you have transition between images.  You can do the same by use “modalElemRef”
-   */
 
-  readonly modalSelector?: string;
   /**
-   * Optional. It hides first element when modal is opened. Default value: true.
+   * Optional. It accepts querySelector selectors. To prevent flickering when you have the transition between images. You can do the same by using “modalRef”.
+   */  
+  readonly modalSelector?: string;
+
+    /**
+   * Optional. Accept the ref which have access to your Modal. To prevent flickering when you have the transition between images. You can do the same by using “modalSelector”.
+   */
+    readonly modalRef?: React.RefObject<HTMLElement>;
+
+  /**
+   * Optional. It hides the first element when the modal is opened.
    */
   readonly hideFirstElem?: boolean;
-  /**
-   * Optional. Accepts react useRef. To prevent flickering when you have transition between images.  You can do the same by use “modalSelector”.
+
+    /**
+   * Optional. Open the animation easing function. You can pass here e.g. cubic-bezier. Default value: “ease-in”.
    */
-  readonly modalRef?: React.RefObject<HTMLElement>;
+    readonly openEasing?: string;
+
   /**
-   * Optional. Close animation easing function. You can pass here e.g. cubic-bezier. Default value: "ease-out".
+   * Optional. Close the animation easing function. You can pass here e.g. cubic-bezier. Default value: “ease-out”.
    */
   readonly closeEasing?: string;
-  /**
-   * Optional. Open animation easing function. You can pass here e.g. cubic-bezier. Default value: "ease-in".
-   */
-  readonly openEasing?: string;
+
   /**
    * Optional. TransformOrigin CSS property value. Default value: "center".
    */
   readonly transformOrigin?: "left top" | "center";
+
   /**
-   * Optional. Property for debugging. Pause element before animation start. Work on firstElemRef. (open animation).
+   * Optional. A property for debugging. Pause an element before the animation starts. It works on the firstElemRef (opening the animation).
    */
   readonly pauseOnOpen?: boolean;
+
   /**
-   * Optional. Property for debugging. Pause element before animation start. Work on modalElemRef (close animation).
+   * Optional. A property for debugging. Pause an element before the animation starts. It works on modalElemRef (close animation).
    */
   readonly pauseOnClose?: boolean;
+
   /**
-   * Optional. Set it to true when you have to disable open animation.
+   * Optional. Set it to ‘true’ when you have to disable the opening of the animation. Default value: false.
    */
   readonly disableOpenAnimation?: boolean;
+
   /**
-   * Optional. Set it to true when you have to disable close animation.
+   * Optional. Set it to true when you have to disable closing the animation. Default value: false.
    */
   readonly disableCloseAnimation?: boolean;
+  
   /**
-   * Optional. You can pass the react state here. This must be the id of your active element. You need this when you want the first element to become visible after changing the element (id). If you have hideFirstElem set to false, you don't need it.
+   * Optional. This must be the ID of your active element. You need this when you want the first element to become visible after changing its ID. If you have hideFirstElem set to false, you don't need it.
    */
   readonly activeIndex?: number | string;
 }
