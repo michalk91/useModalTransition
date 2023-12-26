@@ -1,7 +1,7 @@
 {
   "name": "use-modal-transition",
-  "version": "1.0.10",
-  "description": "a library that allows the transition between an element on a website and a modal element",
+  "version": "1.0.15",
+  "description": "This is a react hook for adding transition between an element on your page and an element in modal.",
   "main": "useModalTransition.js",
   "types": "useModalTransition.d.ts",
   "scripts": {
@@ -13,6 +13,7 @@
   },
   "keywords": [
     "transition-between-elements",
+    "transition",
     "hook",
     "modal",
     "react",
@@ -31,7 +32,9 @@
   "peerDependencies": {
     "react": ">=16",
     "react-dom": ">=16"
-
+  },
+  "dependencies": {
+    "@types/react": "^18.2.45",
+    "typescript": "^5.3.3"
   }
-
 }
