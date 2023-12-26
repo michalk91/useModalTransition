@@ -2,7 +2,6 @@
 This is a react hook for adding transition between an element on your page and an element in modal.
 	
 ## Features
--	Animate what is impossible in pure css,
 -	Based on the “flip animation technique”,
 -	Support react and nextjs,
 -	It's a hook, so there's no problem with the container ruining your style
@@ -10,7 +9,7 @@ This is a react hook for adding transition between an element on your page and a
 -	Lightweight,
 -	Wait until image in modal is loaded,
 -	Images in Modal height and width property can be set to “auto” (when “imgLoaded” added),
--	Works with “scrset” (when “imgLoaded” added),
+-	Works with “srcset” and "sizes" (when “imgLoaded” added),
 -	Many configuration options,
 -	Tested in Cypress
 
@@ -93,8 +92,8 @@ modalElemRef(ref)  | -  | React.RefObject<HTMLElement>  | Reference to an elemen
 openDuration  | 280  | number  | Opening the animation duration (ms).
 closeDuration  | 280  | number  | Closing the animation duration (ms).
 imgLoaded | -  | boolean  | You have to pass the result of img tag “onload” event or “onLoadingComplete” from the <Image> NextJS Component. Highly recommended when you make the transition between images.
-modalSelector  | - | string  | It accepts querySelector selectors. To prevent flickering when you have the transition between images. You can do the same by using “modalRef”
-modalRef(ref)  | - | React.RefObject<HTMLElement>  | Accept the ref which have access to your Modal. To prevent flickering when you have the transition between images. You can do the same by using “modalSelector”
+modalSelector  | - | string  | It accepts querySelector selectors. To prevent flickering when you have the transition between images. You can do the same by using “modalRef”.
+modalRef(ref)  | - | React.RefObject<HTMLElement>  | Accept the ref which have access to your Modal. To prevent flickering when you have the transition between images. You can do the same by using “modalSelector”.
 hideFirstElem  | true | boolean  | It hides the first element when the modal is opened.
 disableOpenAnimation | false | boolean  | Set it to ‘true’ when you have to disable the opening of the animation.
 disableCloseAnimation | false | boolean  | Set it to true when you have to disable closing the animation.
@@ -110,9 +109,17 @@ onCloseAnimationEnd | - | function(element: HTMLElement)  | Called when the clos
 activeIndex | - | number / string  | This must be the ID of your active element. You need this when you want the first element to become visible after changing its ID. If you have hideFirstElem set to false, you don't need it.
 
 ### Functions that hook returns
-Hook also returns a function called "restartAnimation", which can be used to restart the animation. A practical example of its usage is when you have a lightbox and you want to restart the animation each time you change a slide.
+Hook returns a function called "restartAnimation", which can be used to restart the animation. A practical example of its usage is when you have a lightbox and you want to restart the animation each time you change a slide.
 
-## Posible problems
+## Examples on Codesandbox
+### Squares
+  https://codesandbox.io/p/devbox/squares-dm9f8w
+  ### Gallery
+  https://codesandbox.io/p/devbox/gallery-wf2r4t
+  ### Contact Button
+  https://codesandbox.io/p/devbox/contactbtn-rqgl9t
+
+## Possible problems
 ####	An element is being covered by others
   Solution: use the callback functions (onOpenAnimationStart, onOpenAnimationEnd, onCloseAnimationStart, onCloseAnimationEnd) to change the “z-index” property during the animation.
   
