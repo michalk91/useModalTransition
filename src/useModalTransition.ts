@@ -7,22 +7,22 @@ interface Props {
   readonly modalOpened: boolean;
 
   /**
-   * Optional. Called when the opening animation is ready to start. It is provided a reference to the DOM element (modalElemRef) being transitioned as the argument.
+   * Called when the opening animation is ready to start. It is provided a reference to the DOM element (modalElemRef) being transitioned as the argument.
    */
   onOpenAnimationStart?(e?: HTMLElement): void;
 
   /**
-   * Optional. Called when the opening animation is finished. It is provided a reference to the DOM element (modalElemRef) being transitioned as the argument.
+   * Called when the opening animation is finished. It is provided a reference to the DOM element (modalElemRef) being transitioned as the argument.
    */
   onOpenAnimationEnd?(e?: HTMLElement): void;
 
   /**
-   *  Optional. Called when the closing animation is ready to start. It is provided a reference to the DOM element (firstElemRef) being transitioned as the argument.
+   * Called when the closing animation is ready to start. It is provided a reference to the DOM element (firstElemRef) being transitioned as the argument.
    */
   onCloseAnimationStart?(e?: HTMLElement): void;
 
   /**
-   * Optional.  Called when the closing animation is finished. It is provided a reference to the DOM element (firstElemRef) being transitioned as the argument.
+   * Called when the closing animation is finished. It is provided a reference to the DOM element (firstElemRef) being transitioned as the argument.
    */
   onCloseAnimationEnd?(e?: HTMLElement): void;
 
@@ -37,72 +37,72 @@ interface Props {
   readonly modalElemRef: React.RefObject<HTMLElement>;
 
   /**
-   *  Optional. Opening the animation duration (ms). Default value: 280ms.
+   *  Opening the animation duration (ms). Default value: 280ms.
    */
   readonly openDuration?: number;
 
   /**
-   *  Optional. Closing the animation duration (ms).  Default value: 280ms.
+   *  Closing the animation duration (ms).  Default value: 280ms.
    */
   readonly closeDuration?: number;
 
   /**
-   * Optional. You have to pass the result of img tag “onload” event or “onLoadingComplete” from the  NextJS Component. Highly recommended when you make the transition between images.
+   * You have to pass the result of img tag “onload” event or “onLoadingComplete” from the  NextJS Component. Highly recommended when you make the transition between images.
    */
   readonly imgLoaded?: boolean;
 
   /**
-   * Optional. It accepts querySelector selectors. To prevent flickering when you have the transition between images. You can do the same by using “modalRef”.
-   */  
+   * It accepts querySelector selectors. To prevent flickering when you have the transition between images. You can do the same by using “modalRef”.
+   */
   readonly modalSelector?: string;
 
-    /**
-   * Optional. Accept the ref which have access to your Modal. To prevent flickering when you have the transition between images. You can do the same by using “modalSelector”.
+  /**
+   * Accept the ref which have access to your Modal. To prevent flickering when you have the transition between images. You can do the same by using “modalSelector”.
    */
-    readonly modalRef?: React.RefObject<HTMLElement>;
+  readonly modalRef?: React.RefObject<HTMLElement>;
 
   /**
-   * Optional. It hides the first element when the modal is opened.
+   * It hides the first element when the modal is opened.
    */
   readonly hideFirstElem?: boolean;
 
-    /**
-   * Optional. Open the animation easing function. You can pass here e.g. cubic-bezier. Default value: “ease-in”.
+  /**
+   * Open the animation easing function. You can pass here e.g. cubic-bezier. Default value: “ease-in”.
    */
-    readonly openEasing?: string;
+  readonly openEasing?: string;
 
   /**
-   * Optional. Close the animation easing function. You can pass here e.g. cubic-bezier. Default value: “ease-out”.
+   * Close the animation easing function. You can pass here e.g. cubic-bezier. Default value: “ease-out”.
    */
   readonly closeEasing?: string;
 
   /**
-   * Optional. TransformOrigin CSS property value. Default value: "center".
+   * TransformOrigin CSS property value. Default value: "center".
    */
   readonly transformOrigin?: "left top" | "center";
 
   /**
-   * Optional. A property for debugging. Pause an element before the animation starts. It works on the firstElemRef (opening the animation).
+   * A property for debugging. Pause an element before the animation starts. It works on the firstElemRef (opening the animation).
    */
   readonly pauseOnOpen?: boolean;
 
   /**
-   * Optional. A property for debugging. Pause an element before the animation starts. It works on modalElemRef (close animation).
+   *  A property for debugging. Pause an element before the animation starts. It works on modalElemRef (close animation).
    */
   readonly pauseOnClose?: boolean;
 
   /**
-   * Optional. Set it to ‘true’ when you have to disable the opening of the animation. Default value: false.
+   * Set it to ‘true’ when you have to disable the opening of the animation. Default value: false.
    */
   readonly disableOpenAnimation?: boolean;
 
   /**
-   * Optional. Set it to true when you have to disable closing the animation. Default value: false.
+   * Set it to true when you have to disable closing the animation. Default value: false.
    */
   readonly disableCloseAnimation?: boolean;
-  
+
   /**
-   * Optional. This must be the ID of your active element. You need this when you want the first element to become visible after changing its ID. If you have hideFirstElem set to false, you don't need it.
+   * This must be the ID of your active element. You need this when you want the first element to become visible after changing its ID. If you have hideFirstElem set to false, you don't need it.
    */
   readonly activeIndex?: number | string;
 }
