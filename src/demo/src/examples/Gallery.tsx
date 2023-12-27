@@ -22,7 +22,6 @@ interface StateArgs {
   isOpen: boolean;
   imgLoaded: boolean;
   activeIndex: number;
-  animating: boolean;
 }
 
 function Gallery({
@@ -39,7 +38,6 @@ function Gallery({
       isOpen: false,
       imgLoaded: false,
       activeIndex: 0,
-      animating: false,
     })
   );
 
@@ -166,7 +164,7 @@ function Gallery({
     padding: "5px",
     userSelect: "none",
   };
-  console.log("modal", modalInfo.animating);
+
   return (
     <>
       <Modal modalRef={modalRef} isOpen={modalInfo.isOpen} onClose={onClose}>
