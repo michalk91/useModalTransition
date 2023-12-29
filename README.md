@@ -34,9 +34,8 @@ import useModalTransition from "use-modal-transition";
 ```javascript
 const firstElemRef = useRef<HTMLDivElement>(null);
 const modalElemRef = useRef<HTMLDivElement>(null);
-const modalRef = useRef<HTMLElement>(null);
 
-<Modal modalRef={modalRef} isOpen={isOpen} onClose={onClose}>
+<Modal isOpen={isOpen} onClose={onClose}>
    <div ref={modalElemRef}></div>
 </Modal>
 
@@ -54,7 +53,6 @@ const [isOpen, setIsOpen] = useState(false);
     modalOpened: isOpen,
     firstElemRef,
     modalElemRef,
-    modalRef,
   });
 ```
 
@@ -62,7 +60,7 @@ const [isOpen, setIsOpen] = useState(false);
 ```javascript
  return (
     <>
-    <Modal modalRef={modalRef} isOpen={isOpen} onClose={onClose}>
+    <Modal isOpen={isOpen} onClose={onClose}>
         <div
           onClick={() => {
             setIsOpen(false);
