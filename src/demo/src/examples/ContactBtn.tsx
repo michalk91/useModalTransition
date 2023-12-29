@@ -91,7 +91,6 @@ function ContactBtn({
 
   const firstElemRef = useRef<HTMLButtonElement>(null);
   const modalElemRef = useRef<HTMLImageElement>(null);
-  const modalRef = useRef<HTMLElement>(null);
 
   const onOpenAnimationStart = useCallback((): void => {
     onOpenAnimationStartProp && onOpenAnimationStartProp();
@@ -122,7 +121,6 @@ function ContactBtn({
     openEasing: "cubic-bezier(.42,.97,.52,1.49)",
     pauseOnClose,
     pauseOnOpen,
-    modalRef,
   });
 
   const onClose = (): void => {
@@ -131,7 +129,7 @@ function ContactBtn({
 
   return (
     <>
-      <Modal modalRef={modalRef} isOpen={isOpen} onClose={onClose}>
+      <Modal isOpen={isOpen} onClose={onClose}>
         <div
           data-id="lastBtn"
           onClick={(e: BaseSyntheticEvent): void => {

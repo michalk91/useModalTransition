@@ -1,6 +1,6 @@
 {
   "name": "use-modal-transition",
-  "version": "1.0.15",
+  "version": "1.0.16",
   "description": "This is a react hook for adding transition between an element on your page and an element in modal.",
   "main": "useModalTransition.js",
   "types": "useModalTransition.d.ts",

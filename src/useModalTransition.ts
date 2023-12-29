@@ -138,6 +138,107 @@ const getDelta = (
   }
 };
 
+const invertAndPlay = (
+  delta: Delta,
+  elem: HTMLElement,
+  easing: string,
+  duration: number,
+  pause: boolean,
+  onAnimationStart?: (e?: HTMLElement) => void,
+  onAnimationEnd?: (e?: HTMLElement) => void
+): void => {
+  const { translateX, translateY, scaleHeight, scaleWidth } = delta;
+
+  if (
+    (scaleHeight === 0 && scaleWidth === 0) ||
+    (translateX === 0 && translateY === 0)
+  )
+    return;
+
+  const animation = elem.animate(
+    [
+      {
+        transform: ` translate(${translateX}px, ${translateY}px) scale(${scaleWidth}, ${scaleHeight})`,
+      },
+      {
+        transform: `none`,
+      },
+    ],
+    {
+      easing,
+      duration,
+    }
+  );
+
+  pause ? animation.pause() : animation.play();
+
+  animation.ready.then(() => {
+    onAnimationStart && onAnimationStart(elem);
+  });
+  animation.onfinish = () => {
+    onAnimationEnd && onAnimationEnd(elem);
+  };
+};
+
+const openAnimation = (
+  firstElem: HTMLElement,
+  modalElem: HTMLElement,
+  hideFirstElem: boolean,
+  transformOrigin: "left top" | "center",
+  easing: string,
+  duration: number,
+  pause: boolean,
+  onAnimationStart?: (e?: HTMLElement) => void,
+  onAnimationEnd?: (e?: HTMLElement) => void
+) => {
+  if (!modalElem || !firstElem) return;
+
+  if (hideFirstElem) {
+    firstElem.style.opacity = "0";
+  }
+
+  const firstDim = firstElem.getBoundingClientRect();
+  const modalDim = modalElem.getBoundingClientRect();
+
+  const delta = getDelta(firstDim, modalDim, transformOrigin);
+
+  if (delta)
+    invertAndPlay(
+      delta,
+      modalElem,
+      easing,
+      duration,
+      pause,
+      onAnimationStart,
+      onAnimationEnd
+    );
+};
+
+const closeAnimation = (
+  firstElem: HTMLElement,
+  prevModalElemDim: DOMRect,
+  transformOrigin: "left top" | "center",
+  easing: string,
+  duration: number,
+  pause: boolean,
+  onAnimationStart?: (e?: HTMLElement) => void,
+  onAnimationEnd?: (e?: HTMLElement) => void
+) => {
+  const firstDim = firstElem.getBoundingClientRect();
+
+  const delta = getDelta(prevModalElemDim, firstDim, transformOrigin);
+  if (delta)
+    invertAndPlay(
+      delta,
+      firstElem,
+      easing,
+      duration,
+      pause,
+      onAnimationStart,
+      onAnimationEnd
+    );
+};
+
 const useModalTransition = ({
   modalOpened,
   onOpenAnimationStart,
@@ -170,109 +271,24 @@ const useModalTransition = ({
     setRestartAnim((state) => !state);
   }, []);
 
-  const invertAndPlay = useCallback(
-    (delta: Delta, elem: HTMLElement, animDir: "open" | "close"): void => {
-      const { translateX, translateY, scaleHeight, scaleWidth } = delta;
-
-      if (
-        (scaleHeight === 0 && scaleWidth === 0) ||
-        (translateX === 0 && translateY === 0)
-      )
-        return;
-
-      const animation = elem.animate(
-        [
-          {
-            transform: ` translate(${translateX}px, ${translateY}px) scale(${scaleWidth}, ${scaleHeight})`,
-          },
-          {
-            transform: `none`,
-          },
-        ],
-        {
-          easing: animDir === "open" ? openEasing : closeEasing,
-          duration: animDir === "open" ? openDuration : closeDuration,
-        }
-      );
-
-      if (animDir === "open") {
-        if (pauseOnOpen) {
-          animation.pause();
-        } else if (!pauseOnOpen) {
-          animation.play();
-        }
-      }
-      if (animDir === "close") {
-        if (pauseOnClose) {
-          animation.pause();
-        } else if (!pauseOnClose) {
-          animation.play();
-        }
-      }
-
-      animation.ready.then(() => {
-        if (animDir === "open")
-          onOpenAnimationStart && onOpenAnimationStart(elem);
-        else if (animDir === "close")
-          onCloseAnimationStart && onCloseAnimationStart(elem);
-      });
-      animation.onfinish = () => {
-        if (animDir === "open") {
-          onOpenAnimationEnd && onOpenAnimationEnd(elem);
-        } else if (animDir === "close") {
-          onCloseAnimationEnd && onCloseAnimationEnd(elem);
-        }
-      };
-    },
-    []
-  );
-
-  const openAnimation = useCallback(
-    (firstElem: HTMLElement, modalElem: HTMLElement) => {
-      if (!modalElem || !firstElem) return;
-
-      if (hideFirstElem) {
-        firstElem.style.opacity = "0";
-      }
-
-      const firstDim = firstElem.getBoundingClientRect();
-      const modalDim = modalElem.getBoundingClientRect();
-
-      const animDir = "open";
-      const delta = getDelta(firstDim, modalDim, transformOrigin);
-
-      if (delta) invertAndPlay(delta, modalElem, animDir);
-    },
-    [hideFirstElem, getDelta]
-  );
-
-  const closeAnimation = useCallback(
-    (firstElem: HTMLElement, prevModalElemDim: DOMRect) => {
-      const firstDim = firstElem.getBoundingClientRect();
-      const animDir = "close";
-      const delta = getDelta(prevModalElemDim, firstDim, transformOrigin);
-      if (delta) invertAndPlay(delta, firstElem, animDir);
-    },
-    []
-  );
-
   useLayoutEffect(() => {
     if (previousFirstElem && previousFirstElem.current && hideFirstElem) {
       (previousFirstElem.current as HTMLElement).style.opacity = "1";
     }
-  }, [activeIndex, modalOpened]);
+  }, [activeIndex, modalOpened, hideFirstElem]);
 
   useLayoutEffect(() => {
     const firstElem = firstElemRef?.current;
     const modalElem = modalElemRef?.current;
 
-    const modal =
-      modalRef && modalRef.current
-        ? modalRef?.current
-        : document.querySelector<HTMLElement>(`${modalSelector}`);
-
     //hide modal when image isn't loaded
     if (imgLoaded !== undefined) {
+      const modal =
+        modalRef && modalRef.current
+          ? modalRef?.current
+          : modalSelector &&
+            document.querySelector<HTMLElement>(`${modalSelector}`);
+
       if (modal && !imgLoaded) modal.style.opacity = "0";
       else if (modal && imgLoaded) {
         modal.style.opacity = "1";
@@ -293,31 +309,93 @@ const useModalTransition = ({
         modalElem &&
         !disableOpenAnimation
       ) {
-        openAnimation(firstElem, modalElem);
+        openAnimation(
+          firstElem,
+          modalElem,
+          hideFirstElem,
+          transformOrigin,
+          openEasing,
+          openDuration,
+          pauseOnOpen,
+          onOpenAnimationStart,
+          onOpenAnimationEnd
+        );
       } else if (
         !modalOpened &&
+        !pauseOnOpen &&
         imgLoaded &&
         firstElem &&
         previousModalDim &&
         previousModalDim.current &&
         !disableCloseAnimation
       ) {
-        closeAnimation(firstElem, previousModalDim.current);
+        closeAnimation(
+          firstElem,
+          previousModalDim.current,
+          transformOrigin,
+          closeEasing,
+          closeDuration,
+          pauseOnClose,
+          onCloseAnimationStart,
+          onCloseAnimationEnd
+        );
       }
     } else if (imgLoaded === undefined) {
       if (modalOpened && firstElem && modalElem && !disableOpenAnimation) {
-        openAnimation(firstElem, modalElem);
+        openAnimation(
+          firstElem,
+          modalElem,
+          hideFirstElem,
+          transformOrigin,
+          openEasing,
+          openDuration,
+          pauseOnOpen,
+          onOpenAnimationStart,
+          onOpenAnimationEnd
+        );
       } else if (
         !modalOpened &&
+        !pauseOnOpen &&
         firstElem &&
         previousModalDim &&
         previousModalDim.current &&
         !disableCloseAnimation
       ) {
-        closeAnimation(firstElem, previousModalDim.current);
+        closeAnimation(
+          firstElem,
+          previousModalDim.current,
+          transformOrigin,
+          closeEasing,
+          closeDuration,
+          pauseOnClose,
+          onCloseAnimationStart,
+          onCloseAnimationEnd
+        );
       }
     }
-  }, [modalOpened, imgLoaded, restartAnim]);
+  }, [
+    modalOpened,
+    imgLoaded,
+    restartAnim,
+    closeDuration,
+    closeEasing,
+    disableCloseAnimation,
+    disableOpenAnimation,
+    firstElemRef,
+    modalElemRef,
+    hideFirstElem,
+    modalRef,
+    modalSelector,
+    onOpenAnimationStart,
+    onOpenAnimationEnd,
+    onCloseAnimationStart,
+    onCloseAnimationEnd,
+    openDuration,
+    openEasing,
+    pauseOnOpen,
+    pauseOnClose,
+    transformOrigin,
+  ]);
 
   return { restartAnimation };
 };
