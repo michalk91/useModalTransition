@@ -172,12 +172,8 @@ const invertAndPlay = (
 
   pause ? animation.pause() : animation.play();
 
-  animation.ready.then(() => {
-    onAnimationStart && onAnimationStart(elem);
-  });
-  animation.onfinish = () => {
-    onAnimationEnd && onAnimationEnd(elem);
-  };
+  animation.pending && onAnimationStart && onAnimationStart(elem);
+  animation.onfinish = () => onAnimationEnd && onAnimationEnd(elem);
 };
 
 const openAnimation = (
@@ -262,20 +258,22 @@ const useModalTransition = ({
   disableOpenAnimation = false,
   disableCloseAnimation = false,
 }: Props) => {
-  const previousFirstElem = useRef<HTMLElement>(); //cache the element to be able to change its styles
-  const previousModalDim = useRef<DOMRect>(); //cache an elem in modal dimensions for close animation;
+  const previousFirstElem = firstElemRef.current; //cache the element to be able to change its styles
+  const previousModalDim = !modalOpened
+    ? modalElemRef.current?.getBoundingClientRect()
+    : undefined; //cache an elem in modal dimensions for close animation;
 
   const [restartAnim, setRestartAnim] = useState(false);
 
-  const restartAnimation = useCallback((): void => {
+  const restartAnimation = useCallback(() => {
     setRestartAnim((state) => !state);
   }, []);
 
   useLayoutEffect(() => {
-    if (previousFirstElem && previousFirstElem.current && hideFirstElem) {
-      (previousFirstElem.current as HTMLElement).style.opacity = "1";
+    if (previousFirstElem && hideFirstElem) {
+      previousFirstElem.style.opacity = "1";
     }
-  }, [activeIndex, modalOpened, hideFirstElem]);
+  }, [activeIndex, modalOpened, hideFirstElem, previousFirstElem]);
 
   useLayoutEffect(() => {
     const firstElem = firstElemRef?.current;
@@ -293,12 +291,6 @@ const useModalTransition = ({
       else if (modal && imgLoaded) {
         modal.style.opacity = "1";
       }
-    }
-
-    if (firstElem) previousFirstElem.current = firstElem;
-
-    if (modalElem) {
-      previousModalDim.current = modalElem.getBoundingClientRect();
     }
 
     if (imgLoaded !== undefined) {
@@ -326,12 +318,11 @@ const useModalTransition = ({
         imgLoaded &&
         firstElem &&
         previousModalDim &&
-        previousModalDim.current &&
         !disableCloseAnimation
       ) {
         closeAnimation(
           firstElem,
-          previousModalDim.current,
+          previousModalDim,
           transformOrigin,
           closeEasing,
           closeDuration,
@@ -358,12 +349,11 @@ const useModalTransition = ({
         !pauseOnOpen &&
         firstElem &&
         previousModalDim &&
-        previousModalDim.current &&
         !disableCloseAnimation
       ) {
         closeAnimation(
           firstElem,
-          previousModalDim.current,
+          previousModalDim,
           transformOrigin,
           closeEasing,
           closeDuration,
@@ -386,6 +376,7 @@ const useModalTransition = ({
     hideFirstElem,
     modalRef,
     modalSelector,
+    previousModalDim,
     onOpenAnimationStart,
     onOpenAnimationEnd,
     onCloseAnimationStart,
