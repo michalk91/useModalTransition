@@ -4,7 +4,6 @@ import {
   useEffect,
   useRef,
   useState,
-  ComponentState,
 } from "react";
 import useModalTransition from "use-modal-transition";
 import Modal from "../Modal";
@@ -18,12 +17,6 @@ interface Props {
   pauseOnOpen?: boolean;
 }
 
-interface StateArgs {
-  isOpen: boolean;
-  imgLoaded: boolean;
-  activeIndex: number;
-}
-
 function Gallery({
   onOpenAnimationStart,
   onOpenAnimationEnd,
@@ -32,14 +25,11 @@ function Gallery({
   pauseOnClose,
   pauseOnOpen,
 }: Props) {
-  const [modalInfo, setModalInfo] = useState<ComponentState>(
-    (state: StateArgs) => ({
-      ...state,
-      isOpen: false,
-      imgLoaded: false,
-      activeIndex: 0,
-    })
-  );
+  const [modalInfo, setModalInfo] = useState({
+    isOpen: false,
+    imgLoaded: false,
+    activeIndex: 0,
+  });
 
   const images: { src: string }[] = [
     {
@@ -123,12 +113,12 @@ function Gallery({
   });
 
   const onClose = (): void => {
-    setModalInfo((state: StateArgs) => ({ ...state, isOpen: false }));
+    setModalInfo((state) => ({ ...state, isOpen: false }));
   };
 
   useEffect(() => {
     if (!modalInfo.isOpen)
-      setModalInfo((state: StateArgs) => ({ ...state, imgLoaded: false }));
+      setModalInfo((state) => ({ ...state, imgLoaded: false }));
   }, [modalInfo.isOpen]);
 
   const containerStyle: CSSProperties = {
@@ -172,7 +162,7 @@ function Gallery({
           style={{ right: "5% ", ...buttonStyle }}
           onClick={(e: BaseSyntheticEvent) => {
             e.stopPropagation();
-            setModalInfo((state: StateArgs) => ({
+            setModalInfo((state) => ({
               ...state,
               activeIndex:
                 state.activeIndex < images.length - 1
@@ -190,7 +180,7 @@ function Gallery({
           }}
           onClick={(e: BaseSyntheticEvent) => {
             e.stopPropagation();
-            setModalInfo((state: StateArgs) => ({
+            setModalInfo((state) => ({
               ...state,
               activeIndex:
                 state.activeIndex > 0
@@ -206,13 +196,13 @@ function Gallery({
             key={index}
             onLoad={(): void => {
               index === modalInfo.activeIndex &&
-                setModalInfo((state: StateArgs) => ({
+                setModalInfo((state) => ({
                   ...state,
                   imgLoaded: true,
                 }));
             }}
             onClick={(): void => {
-              setModalInfo((state: StateArgs) => ({ ...state, isOpen: false }));
+              setModalInfo((state) => ({ ...state, isOpen: false }));
             }}
             ref={modalInfo.activeIndex === index ? modalElemRef : null}
             src={item.src}
@@ -229,7 +219,7 @@ function Gallery({
           <img
             key={index}
             onClick={() => {
-              setModalInfo((state: StateArgs) => ({
+              setModalInfo((state) => ({
                 ...state,
                 isOpen: true,
                 activeIndex: index,
