@@ -262,12 +262,17 @@ const useModalTransition = ({
   const previousModalDim = !modalOpened
     ? modalElemRef.current?.getBoundingClientRect()
     : undefined; //cache an elem in modal dimensions for close animation;
+  const animationFinished = useRef<boolean>(true); //after changing modalOpened, the animation should run only once
 
   const [restartAnim, setRestartAnim] = useState(false);
 
   const restartAnimation = useCallback(() => {
     setRestartAnim((state) => !state);
   }, []);
+
+  useLayoutEffect(() => {
+    animationFinished.current = false;
+  }, [modalOpened, restartAnim]);
 
   useLayoutEffect(() => {
     if (previousFirstElem && hideFirstElem) {
@@ -295,6 +300,7 @@ const useModalTransition = ({
 
     if (imgLoaded !== undefined) {
       if (
+        !animationFinished.current &&
         modalOpened &&
         imgLoaded &&
         firstElem &&
@@ -312,7 +318,9 @@ const useModalTransition = ({
           onOpenAnimationStart,
           onOpenAnimationEnd
         );
+        animationFinished.current = true;
       } else if (
+        !animationFinished.current &&
         !modalOpened &&
         !pauseOnOpen &&
         imgLoaded &&
@@ -330,9 +338,16 @@ const useModalTransition = ({
           onCloseAnimationStart,
           onCloseAnimationEnd
         );
+        animationFinished.current = true;
       }
     } else if (imgLoaded === undefined) {
-      if (modalOpened && firstElem && modalElem && !disableOpenAnimation) {
+      if (
+        !animationFinished.current &&
+        modalOpened &&
+        firstElem &&
+        modalElem &&
+        !disableOpenAnimation
+      ) {
         openAnimation(
           firstElem,
           modalElem,
@@ -344,7 +359,9 @@ const useModalTransition = ({
           onOpenAnimationStart,
           onOpenAnimationEnd
         );
+        animationFinished.current = true;
       } else if (
+        !animationFinished.current &&
         !modalOpened &&
         !pauseOnOpen &&
         firstElem &&
@@ -361,12 +378,12 @@ const useModalTransition = ({
           onCloseAnimationStart,
           onCloseAnimationEnd
         );
+        animationFinished.current = true;
       }
     }
   }, [
     modalOpened,
     imgLoaded,
-    restartAnim,
     closeDuration,
     closeEasing,
     disableCloseAnimation,
@@ -386,6 +403,8 @@ const useModalTransition = ({
     pauseOnOpen,
     pauseOnClose,
     transformOrigin,
+    animationFinished,
+    restartAnim,
   ]);
 
   return { restartAnimation };
