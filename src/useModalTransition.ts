@@ -135,7 +135,18 @@ const getDelta = (
       scaleWidth: first.width / second.width,
       scaleHeight: first.height / second.height,
     };
-  }
+  } else return;
+};
+
+const isDeltaCorrect = (delta: Delta) => {
+  const { translateX, translateY, scaleHeight, scaleWidth } = delta;
+
+  if (
+    (scaleHeight === 1 && scaleWidth === 1) ||
+    (translateX === 0 && translateY === 0)
+  )
+    return false;
+  else return true;
 };
 
 const invertAndPlay = (
@@ -146,14 +157,8 @@ const invertAndPlay = (
   pause: boolean,
   onAnimationStart?: (e?: HTMLElement) => void,
   onAnimationEnd?: (e?: HTMLElement) => void
-): void => {
+) => {
   const { translateX, translateY, scaleHeight, scaleWidth } = delta;
-
-  if (
-    (scaleHeight === 0 && scaleWidth === 0) ||
-    (translateX === 0 && translateY === 0)
-  )
-    return;
 
   const animation = elem.animate(
     [
@@ -170,69 +175,17 @@ const invertAndPlay = (
     }
   );
 
-  pause ? animation.pause() : animation.play();
+  animation.pause();
 
-  animation.pending && onAnimationStart && onAnimationStart(elem);
-  animation.onfinish = () => onAnimationEnd && onAnimationEnd(elem);
-};
-
-const openAnimation = (
-  firstElem: HTMLElement,
-  modalElem: HTMLElement,
-  hideFirstElem: boolean,
-  transformOrigin: "left top" | "center",
-  easing: string,
-  duration: number,
-  pause: boolean,
-  onAnimationStart?: (e?: HTMLElement) => void,
-  onAnimationEnd?: (e?: HTMLElement) => void
-) => {
-  if (!modalElem || !firstElem) return;
-
-  if (hideFirstElem) {
-    firstElem.style.opacity = "0";
+  if (animation.pending) {
+    onAnimationStart && onAnimationStart(elem);
   }
-
-  const firstDim = firstElem.getBoundingClientRect();
-  const modalDim = modalElem.getBoundingClientRect();
-
-  const delta = getDelta(firstDim, modalDim, transformOrigin);
-
-  if (delta)
-    invertAndPlay(
-      delta,
-      modalElem,
-      easing,
-      duration,
-      pause,
-      onAnimationStart,
-      onAnimationEnd
-    );
-};
-
-const closeAnimation = (
-  firstElem: HTMLElement,
-  prevModalElemDim: DOMRect,
-  transformOrigin: "left top" | "center",
-  easing: string,
-  duration: number,
-  pause: boolean,
-  onAnimationStart?: (e?: HTMLElement) => void,
-  onAnimationEnd?: (e?: HTMLElement) => void
-) => {
-  const firstDim = firstElem.getBoundingClientRect();
-
-  const delta = getDelta(prevModalElemDim, firstDim, transformOrigin);
-  if (delta)
-    invertAndPlay(
-      delta,
-      firstElem,
-      easing,
-      duration,
-      pause,
-      onAnimationStart,
-      onAnimationEnd
-    );
+  animation.ready.then(() => {
+    !pause && animation.play();
+  });
+  animation.onfinish = () => {
+    onAnimationEnd && onAnimationEnd(elem);
+  };
 };
 
 const useModalTransition = ({
@@ -262,7 +215,7 @@ const useModalTransition = ({
   const previousModalDim = !modalOpened
     ? modalElemRef.current?.getBoundingClientRect()
     : undefined; //cache an elem in modal dimensions for close animation;
-  const animationFinished = useRef<boolean>(true); //after changing modalOpened, the animation should run only once
+  const animFinished = useRef<boolean>(false); //after changing modalOpened, the animation should run only once
 
   const [restartAnim, setRestartAnim] = useState(false);
 
@@ -271,7 +224,7 @@ const useModalTransition = ({
   }, []);
 
   useLayoutEffect(() => {
-    animationFinished.current = false;
+    animFinished.current = false;
   }, [modalOpened, restartAnim]);
 
   useLayoutEffect(() => {
@@ -281,106 +234,115 @@ const useModalTransition = ({
   }, [activeIndex, modalOpened, hideFirstElem, previousFirstElem]);
 
   useLayoutEffect(() => {
+    const modal =
+      imgLoaded !== undefined && modalRef
+        ? modalRef?.current
+        : modalSelector &&
+          document.querySelector<HTMLElement>(`${modalSelector}`);
     const firstElem = firstElemRef?.current;
     const modalElem = modalElemRef?.current;
 
-    //hide modal when image isn't loaded
-    if (imgLoaded !== undefined) {
-      const modal =
-        modalRef && modalRef.current
-          ? modalRef?.current
-          : modalSelector &&
-            document.querySelector<HTMLElement>(`${modalSelector}`);
+    const firstDim = firstElem && firstElem.getBoundingClientRect();
+    const modalDim = modalElem && modalElem.getBoundingClientRect();
 
-      if (modal && !imgLoaded) modal.style.opacity = "0";
-      else if (modal && imgLoaded) {
-        modal.style.opacity = "1";
-      }
+    //hide modal and element in modal when image isn't loaded
+    if (imgLoaded !== undefined && modal && imgLoaded === false) {
+      modal.style.opacity = "0";
     }
 
-    if (imgLoaded !== undefined) {
-      if (
-        !animationFinished.current &&
-        modalOpened &&
-        imgLoaded &&
-        firstElem &&
-        modalElem &&
-        !disableOpenAnimation
-      ) {
-        openAnimation(
-          firstElem,
-          modalElem,
-          hideFirstElem,
-          transformOrigin,
-          openEasing,
-          openDuration,
-          pauseOnOpen,
-          onOpenAnimationStart,
-          onOpenAnimationEnd
-        );
-        animationFinished.current = true;
-      } else if (
-        !animationFinished.current &&
-        !modalOpened &&
-        !pauseOnOpen &&
-        imgLoaded &&
-        firstElem &&
-        previousModalDim &&
-        !disableCloseAnimation
-      ) {
-        closeAnimation(
-          firstElem,
-          previousModalDim,
-          transformOrigin,
-          closeEasing,
-          closeDuration,
-          pauseOnClose,
-          onCloseAnimationStart,
-          onCloseAnimationEnd
-        );
-        animationFinished.current = true;
+    if (
+      !animFinished.current &&
+      !disableOpenAnimation &&
+      modal &&
+      modalOpened &&
+      imgLoaded !== undefined &&
+      firstElem &&
+      modalElem
+    ) {
+      if (!imgLoaded) return;
+
+      modal.style.opacity = "1";
+
+      if (hideFirstElem) {
+        firstElem.style.opacity = "0";
       }
-    } else if (imgLoaded === undefined) {
-      if (
-        !animationFinished.current &&
-        modalOpened &&
-        firstElem &&
-        modalElem &&
-        !disableOpenAnimation
-      ) {
-        openAnimation(
-          firstElem,
-          modalElem,
-          hideFirstElem,
-          transformOrigin,
-          openEasing,
-          openDuration,
-          pauseOnOpen,
-          onOpenAnimationStart,
-          onOpenAnimationEnd
-        );
-        animationFinished.current = true;
-      } else if (
-        !animationFinished.current &&
-        !modalOpened &&
-        !pauseOnOpen &&
-        firstElem &&
-        previousModalDim &&
-        !disableCloseAnimation
-      ) {
-        closeAnimation(
-          firstElem,
-          previousModalDim,
-          transformOrigin,
-          closeEasing,
-          closeDuration,
-          pauseOnClose,
-          onCloseAnimationStart,
-          onCloseAnimationEnd
-        );
-        animationFinished.current = true;
+
+      const delta = getDelta(
+        firstDim as DOMRect,
+        modalDim as DOMRect,
+        transformOrigin
+      );
+
+      if (!delta || !isDeltaCorrect(delta)) return;
+
+      invertAndPlay(
+        //open animation
+        delta,
+        modalElem,
+        openEasing,
+        openDuration,
+        pauseOnOpen,
+        onOpenAnimationStart,
+        onOpenAnimationEnd
+      );
+    } else if (
+      imgLoaded === undefined &&
+      modalElem &&
+      !animFinished.current &&
+      firstElem
+    ) {
+      const delta = getDelta(
+        firstDim as DOMRect,
+        modalDim as DOMRect,
+        transformOrigin
+      );
+
+      if (hideFirstElem) {
+        firstElem.style.opacity = "0";
       }
+
+      if (!delta || !isDeltaCorrect(delta)) return;
+
+      invertAndPlay(
+        //open animation without using the imgLoaded prop
+        delta,
+        modalElem,
+        openEasing,
+        openDuration,
+        pauseOnOpen,
+        onOpenAnimationStart,
+        onOpenAnimationEnd
+      );
     }
+
+    if (
+      !animFinished.current &&
+      !modalOpened &&
+      !pauseOnOpen &&
+      firstElem &&
+      previousModalDim &&
+      !disableCloseAnimation
+    ) {
+      const delta = getDelta(
+        previousModalDim,
+        firstDim as DOMRect,
+        transformOrigin
+      );
+
+      if (!delta || !isDeltaCorrect(delta)) return;
+
+      invertAndPlay(
+        //close animation
+        delta,
+        firstElem,
+        closeEasing,
+        closeDuration,
+        pauseOnClose,
+        onCloseAnimationStart,
+        onCloseAnimationEnd
+      );
+    }
+    animFinished.current = true;
   }, [
     modalOpened,
     imgLoaded,
@@ -403,7 +365,7 @@ const useModalTransition = ({
     pauseOnOpen,
     pauseOnClose,
     transformOrigin,
-    animationFinished,
+    animFinished,
     restartAnim,
   ]);
 
