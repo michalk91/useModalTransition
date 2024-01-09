@@ -248,9 +248,9 @@ const useModalTransition = ({
     const firstDim = firstElem && firstElem.getBoundingClientRect();
     const modalDim = modalElem && modalElem.getBoundingClientRect();
 
-    if (imgLoaded === undefined) {
+    if (imgLoaded === undefined && firstDim && modalDim) {
       setFirstRender(false);
-    } else if (imgLoaded !== undefined) {
+    } else if (imgLoaded !== undefined && firstDim && modalDim) {
       if (modal) modal.style.opacity = "0";
       if (!imgLoaded) return;
 
