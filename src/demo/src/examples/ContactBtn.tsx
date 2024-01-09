@@ -5,7 +5,7 @@ import {
   useCallback,
   CSSProperties,
 } from "react";
-import useModalTransition from "use-modal-transition";
+import useModalTransition from "../../../useModalTransition";
 import Modal from "../Modal";
 
 interface Props {

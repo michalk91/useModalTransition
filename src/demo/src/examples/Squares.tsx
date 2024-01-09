@@ -1,5 +1,5 @@
 import { useRef, useState, CSSProperties } from "react";
-import useModalTransition from "use-modal-transition";
+import useModalTransition from "../../../useModalTransition";
 import Modal from "../Modal";
 
 interface Props {

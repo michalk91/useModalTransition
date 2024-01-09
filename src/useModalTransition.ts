@@ -179,6 +179,7 @@ const invertAndPlay = (
 
   if (animation.pending) {
     onAnimationStart && onAnimationStart(elem);
+    !pause && animation.play();
   }
   animation.ready.then(() => {
     !pause && animation.play();
@@ -218,9 +219,11 @@ const useModalTransition = ({
   const animFinished = useRef<boolean>(false); //after changing modalOpened, the animation should run only once
 
   const [restartAnim, setRestartAnim] = useState(false);
+  const [firstRender, setFirstRender] = useState(true);
 
   const restartAnimation = useCallback(() => {
     setRestartAnim((state) => !state);
+    setFirstRender(true);
   }, []);
 
   useLayoutEffect(() => {
@@ -245,10 +248,16 @@ const useModalTransition = ({
     const firstDim = firstElem && firstElem.getBoundingClientRect();
     const modalDim = modalElem && modalElem.getBoundingClientRect();
 
-    //hide modal and element in modal when image isn't loaded
-    if (imgLoaded !== undefined && modal && imgLoaded === false) {
-      modal.style.opacity = "0";
+    if (imgLoaded === undefined) {
+      setFirstRender(false);
+    } else if (imgLoaded !== undefined) {
+      if (modal) modal.style.opacity = "0";
+      if (!imgLoaded) return;
+
+      setFirstRender(false);
     }
+
+    if (firstRender) return;
 
     if (
       !animFinished.current &&
@@ -344,6 +353,7 @@ const useModalTransition = ({
     }
     animFinished.current = true;
   }, [
+    firstRender,
     modalOpened,
     imgLoaded,
     closeDuration,

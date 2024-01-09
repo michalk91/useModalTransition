@@ -5,7 +5,7 @@ import {
   useRef,
   useState,
 } from "react";
-import useModalTransition from "use-modal-transition";
+import useModalTransition from "../../../useModalTransition";
 import Modal from "../Modal";
 
 interface Props {
@@ -106,9 +106,9 @@ function Gallery({
     modalElemRef,
     imgLoaded: modalInfo.imgLoaded,
     openEasing: "cubic-bezier(.25,.75,.5,1.25)",
+    activeIndex: modalInfo.activeIndex,
     pauseOnOpen,
     pauseOnClose,
-    activeIndex: modalInfo.activeIndex,
     modalRef,
   });
 
