@@ -131,7 +131,6 @@ function ContactBtn({
     <>
       <Modal isOpen={isOpen} onClose={onClose}>
         <div
-          data-id="lastBtn"
           onClick={(e: BaseSyntheticEvent): void => {
             e.stopPropagation();
           }}
@@ -139,7 +138,6 @@ function ContactBtn({
           style={modalContainerStyle}
         >
           <button
-            data-id="closeBtn"
             style={closeBtnStyle}
             onClick={(): void => {
               setIsOpen(false);
