@@ -155,7 +155,7 @@ function ContactBtn({
             <input
               style={inputStyles}
               type="text"
-              placeholder="Your subname"
+              placeholder="Your surname"
             ></input>
             <textarea
               rows={6}
