@@ -158,7 +158,7 @@ function ContactBtn({
               placeholder="Your subname"
             ></input>
             <textarea
-              rows={10}
+              rows={6}
               style={inputStyles}
               placeholder="Your message"
               name="message"
