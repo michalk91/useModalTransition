@@ -285,6 +285,7 @@ const useModalTransition = ({
         onOpenAnimationStart,
         onOpenAnimationEnd
       );
+      animFinished.current = true;
     } else if (
       imgLoaded === undefined &&
       modalElem &&
@@ -313,6 +314,7 @@ const useModalTransition = ({
         onOpenAnimationStart,
         onOpenAnimationEnd
       );
+      animFinished.current = true;
     }
 
     if (
@@ -341,8 +343,8 @@ const useModalTransition = ({
         onCloseAnimationStart,
         onCloseAnimationEnd
       );
+      animFinished.current = true;
     }
-    animFinished.current = true;
   }, [
     modalOpened,
     imgLoaded,
