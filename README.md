@@ -132,5 +132,8 @@ Hook returns a function called "restartAnimation", which can be used to restart 
   Solution: Check that you are not animating any parent elements that are larger than the elements you want to animate. You can use the prop “pauseOnOpen” or “PauseOnClose”.
   During the animation the element should perfectly cover the element that is going to be under it.
 
+   ####	The "restartAnimation" function is causing flickering.
+  Solution: Try calling the "restartAnimation" function in the "useLayoutEffect" hook.
+
   ## About the flip animation technique
    https://css-tricks.com/animating-layouts-with-the-flip-technique/
